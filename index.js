@@ -23,50 +23,29 @@ app.get('/api/hello', function (req, res) {
 	res.json({ greeting: 'hello API' })
 })
 
-// task api
-app.get('/api/:date', (req, res) => {
-	const { date } = req.params
-	const dateCheck = new Date(date)
-	if (dateCheck == 'Invalid Date') {
-		res.set({ 'Content-Type': 'application/json' }).json({ error: 'Invalid Date' })
-  }else{
+// date api
+app.get("/api/:date", (req, res) => {
+  const paramsDate = req.params.date;
+  const invalidDate = "Invalid Date";
+  const date = parseInt(paramsDate) < 10000
+      ? new Date(paramsDate)
+      : new Date(parseInt(paramsDate))
 
-    if (date.search('-') != -1) {
-      const dateUTC = new Date(date)
-			const unixDate = Math.floor(dateUTC.getTime() / 1000)
-			res
-      .set({
-					'Content-Type': 'application/json',
-				})
-				.json({
-					unix: unixDate,
-					utc: dateUTC.toUTCString(),
-				})
-		} else {
-      const dateUNIX = new Date(date * 1000)
-			const dateUTC = dateUNIX.toUTCString()
-			res
-      .set({
-        'Content-Type': 'application/json',
-      })
-      .json({
-        unix: date,
-        utc: dateUTC,
-      })
-    }
-		}
-})
+  date.toString() === invalidDate
+      ? res.json({ error: invalidDate })
+      : res.json({ unix: date.valueOf(), utc: date.toUTCString() });
+});
+
 
 // empty date endpoint
 app.get("/api",(req,res)=>{
   const currentDate = new Date();
-  const currentDateUNIX = Math.floor(currentDate.getTime() / 1000) 
   res
       .set({
 					'Content-Type': 'application/json',
 				})
 				.json({
-					unix: currentDateUNIX,
+					unix: currentDate.valueOf(),
 					utc: currentDate.toUTCString(),
 				})
 })
